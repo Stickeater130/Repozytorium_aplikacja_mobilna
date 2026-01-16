@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Callendar1</string>
+    <string name="tytul">what i need to do</string>
+    <string name="OPIS">Opis</string>
+    <string name="KIEDYKONIEC">"kiedykoniec "</string>
+    <string name="sendbutton">send</string>
+    <string name="Next">Budzik</string>
+    <string name="Next2" />
+</resources>
