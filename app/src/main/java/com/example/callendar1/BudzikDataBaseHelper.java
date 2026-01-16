@@ -17,20 +17,19 @@ import java.util.Date;
 
 public class BudzikDataBaseHelper extends SQLiteOpenHelper {
 
-    public static final String TASKS_TABLE = "TASKS_TABLE";
-    public static final String COLUMN_OPIS = "OPIS";
-    public static final String COLUMN_KIEDYKONIEC = "KIEDYKOINIEC";
-    public static final String COLUMN_STATUS = "STATUS";
+    public static final String WAKE_UP_TABLE = "WAKE_UP_TABLE";
+    public static final String COLUMN_GODZINA = "GODZINA";
+    public static final String COLUMN_KIEDY_WAKE_UP = "KIEDY_WAKE_UP";
     public static final String COLUMN_ID = "ID";
 
     public BudzikDataBaseHelper(@Nullable Context context) {
-        super(context,"db.Tasks", null, 1);
+        super(context,"db.Wakeup", null, 1);
     }
 
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String createTableStatement = "CREATE TABLE " + TASKS_TABLE + " (" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + COLUMN_OPIS + " TEXT, " + COLUMN_KIEDYKONIEC + " DATE, " + COLUMN_STATUS + " TEXT)";
+        String createTableStatement = "CREATE TABLE " + WAKE_UP_TABLE + " (" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + COLUMN_GODZINA + " TEXT, " + COLUMN_KIEDY_WAKE_UP + " TEXT)";
         db.execSQL(createTableStatement);
     }
     @Override
@@ -38,14 +37,13 @@ public class BudzikDataBaseHelper extends SQLiteOpenHelper {
     {
 
     }
-    public boolean addOne(TaskModel task)
+    public boolean addOne(WakeUpModel wakeup)
     {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
-        cv.put(COLUMN_OPIS,task.getOpis());
-        cv.put(COLUMN_KIEDYKONIEC,task.getKiedykoniec());
-        cv.put(COLUMN_STATUS,task.getStatus());
-        long insert = db.insert(TASKS_TABLE,null,cv);
+        cv.put(COLUMN_GODZINA,wakeup.getGodzina());
+        cv.put(COLUMN_KIEDY_WAKE_UP,wakeup.getkiedywakeup());
+        long insert = db.insert(WAKE_UP_TABLE,null,cv);
         if (insert == -1)
         {
             return false;
@@ -57,43 +55,23 @@ public class BudzikDataBaseHelper extends SQLiteOpenHelper {
 
     }
 
-    public List<TaskModel> getEveryOne()
+    public List<WakeUpModel> getEveryOne()
     {
-        List<TaskModel>  resultList = new ArrayList<>();
-        String querystring = "SELECT * FROM "+TASKS_TABLE;
+        List<WakeUpModel>  resultList = new ArrayList<>();
+        String querystring = "SELECT * FROM "+ WAKE_UP_TABLE;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(querystring,null);
         if(cursor.moveToFirst())
         {
             do
             {
-                String taskstatus = "4";
+
                 int taskid = cursor.getInt(0);
-                String taskopis = cursor.getString(1);
-                String taskkiedykoniec = cursor.getString(2);
+                String task_godzina = cursor.getString(1);
+                String taskkiedy_wake_up = cursor.getString(2);
 
-                //Date kiedykoniec_date = Date.valueOf(taskkiedykoniec);
-                java.sql.Date kiedykoniec_date = java.sql.Date.valueOf(taskkiedykoniec);
-
-                Date currentDate = new Date();
-                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-                String currentDate_string = formatter.format(currentDate);
-                java.sql.Date currentdate_date = java.sql.Date.valueOf(currentDate_string);
-                long ilemilisekund = (kiedykoniec_date.getTime()-currentdate_date.getTime());
-                long iledni = ilemilisekund / (24 * 60 * 60 * 1000);
-                if (iledni<0)
-                { taskstatus = "0";}
-                if (iledni>=0 && iledni<=1)
-                { taskstatus = "1";}
-                if (iledni>=2 && iledni<=3)
-                { taskstatus = "2";}
-                if (iledni>=4 && iledni<=6)
-                { taskstatus = "3";}
-                if (iledni>6)
-                { taskstatus = "4";}
-
-                TaskModel taskmodel = new TaskModel(taskid,taskopis,taskkiedykoniec,taskstatus);
-                resultList.add(taskmodel);
+                WakeUpModel wakeUpModel = new WakeUpModel(taskid,task_godzina,taskkiedy_wake_up);
+                resultList.add(wakeUpModel);
             } while (cursor.moveToNext() );
         }
         else
@@ -104,10 +82,10 @@ public class BudzikDataBaseHelper extends SQLiteOpenHelper {
         return resultList;
     }
 
-    public boolean deleteOne(TaskModel taskModel)
+    public boolean deleteOne(WakeUpModel wakeupModel)
     {
         SQLiteDatabase db = this.getReadableDatabase();
-        String querystring = "DELETE FROM "+TASKS_TABLE +" WHERE "+COLUMN_ID + "=" +taskModel.getId();
+        String querystring = "DELETE FROM "+ WAKE_UP_TABLE +" WHERE "+COLUMN_ID + "=" +wakeupModel.getId();
         Cursor cursor = db.rawQuery(querystring,null);
         if (cursor.moveToFirst())
         {

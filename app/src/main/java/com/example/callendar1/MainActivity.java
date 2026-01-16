@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         Opis = findViewById(R.id.opis);
         Kalendarz = findViewById(R.id.calendarView);
         ViewListNew = findViewById(R.id.listView);
-        //ShowTaskaList(dataBaseHelper);
+        ShowTaskaList(dataBaseHelper);
 
         SendButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
 
                 boolean success = dataBaseHelper.addOne(taskModel);
                 Toast.makeText(MainActivity.this,"Success = "+success,Toast.LENGTH_SHORT).show();
-                //ShowTaskaList(dataBaseHelper);
+                ShowTaskaList(dataBaseHelper);
 
             }
         });
@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 TaskModel clickedtask = (TaskModel) parent.getItemAtPosition(position);
                 dataBaseHelper.deleteOne(clickedtask);
-                //ShowTaskaList(dataBaseHelper);
+                ShowTaskaList(dataBaseHelper);
                 Toast.makeText(MainActivity.this,"Usunięto :"+clickedtask.toString(),Toast.LENGTH_SHORT).show();
             }
         });
