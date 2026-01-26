@@ -96,5 +96,47 @@ public class BudzikDataBaseHelper extends SQLiteOpenHelper {
             return false;
         }
     }
+
+    public List<String> getEveryOneSimple()
+    {
+        List<String>  resultList = new ArrayList<>();
+        String querystring = "SELECT * FROM "+ WAKE_UP_TABLE;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(querystring,null);
+        if(cursor.moveToFirst())
+        {
+            do
+            {
+
+                int taskid = cursor.getInt(0);
+                String task_godzina = cursor.getString(1);
+                String taskkiedy_wake_up = cursor.getString(2);
+
+                WakeUpModel wakeUpModel = new WakeUpModel(taskid,task_godzina,taskkiedy_wake_up);
+                resultList.add(wakeUpModel.getId()+" "+wakeUpModel.getkiedywakeup()+" "+wakeUpModel.getGodzina());
+            } while (cursor.moveToNext() );
+        }
+        else
+        {
+            cursor.close();
+            db.close();
+        }
+        return resultList;
+    }
+    public boolean deleteOneSimple(String wakeupModel)
+    {
+        Integer id = Integer.parseInt(wakeupModel.split(" ")[0]);
+        SQLiteDatabase db = this.getReadableDatabase();
+        String querystring = "DELETE FROM "+ WAKE_UP_TABLE +" WHERE "+COLUMN_ID + "=" +id.toString();
+        Cursor cursor = db.rawQuery(querystring,null);
+        if (cursor.moveToFirst())
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 }
 

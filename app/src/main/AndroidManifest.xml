@@ -26,6 +26,12 @@
             android:parentActivityName=".MainActivity">
         </activity>
 
+        <activity android:name=".Pomodoro"
+            android:exported="false"
+            android:parentActivityName=".Budzik">
+        </activity>
+        <service android:name=".WakeUpService"/>
+
     </application>
 
 </manifest>
