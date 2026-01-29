@@ -1,72 +1,126 @@
 package com.example.callendar1;
 
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.view.View;
+import android.os.CountDownTimer;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import androidx.activity.EdgeToEdge;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import com.example.callendar1.R;
+
+import java.util.Locale;
+
 public class Pomodoro extends AppCompatActivity {
 
-    private Button pomodoroNext;
-    private TextView czypracuje;
-    private View my;
+    private static final long WORK_DURATION_MS  = 25L * 60L * 1000L;
+    private static final long BREAK_DURATION_MS = 5L * 60L * 1000L;
 
-    private final Handler handler = new Handler(Looper.getMainLooper());
-    private boolean isGreen = false;
+    private enum Phase { WORK, BREAK }
 
-    private final Runnable switchRunnable = new Runnable() {
-        @Override
-        public void run() {
-            // Toggle color state
-            isGreen = !isGreen;
+    private RelativeLayout rootLayout;
+    private TextView sessionTextView;
+    private TextView timerTextView;
+    private Button startButton;
 
-            if (isGreen) {
-                my.setBackgroundColor(ContextCompat.getColor(Pomodoro.this, R.color.green));
-                czypracuje.setVisibility(View.VISIBLE);
-            } else {
-                my.setBackgroundColor(ContextCompat.getColor(Pomodoro.this, R.color.red));
-                czypracuje.setVisibility(View.GONE);
-            }
+    private CountDownTimer countDownTimer;
+    private boolean timerRunning = false;
 
-            // Repeat every 10 seconds
-            handler.postDelayed(this, 1000);
-        }
-    };
+    private Phase currentPhase = Phase.WORK;
+    private long timeLeftMs = WORK_DURATION_MS;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.pomodoro);
 
-        // Connect views
-        my = findViewById(R.id.pomodoro);
-        pomodoroNext = findViewById(R.id.pomodoroNext);
-        czypracuje = findViewById(R.id.textView3);
+        rootLayout = findViewById(R.id.root_layout);
+        sessionTextView = findViewById(R.id.session_text_view);
+        timerTextView = findViewById(R.id.timer_text_view);
+        startButton = findViewById(R.id.start_button);
 
-        // Start as RED (optional)
-        my.setBackgroundColor(ContextCompat.getColor(this, R.color.red));
-        czypracuje.setVisibility(View.GONE);
+        updateUIForPhase();
+        updateTimerText();
 
-        // Button closes activity
-        pomodoroNext.setOnClickListener(v -> finish());
+        startButton.setOnClickListener(v -> {
+            if (!timerRunning) {
+                startTimer();
+            } else {
+                pauseTimer();
+            }
+        });
+    }
 
-        // Start switching every 10 seconds
-        handler.postDelayed(switchRunnable, 1000);
+    private void startTimer() {
+        // Safety: cancel any previous timer
+        if (countDownTimer != null) countDownTimer.cancel();
 
-        // If you want it to switch immediately at start instead, use:
-        // handler.post(switchRunnable);
+        countDownTimer = new CountDownTimer(timeLeftMs, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                timeLeftMs = millisUntilFinished;
+                updateTimerText();
+            }
+
+            @Override
+            public void onFinish() {
+                timerRunning = false;
+
+                // Switch phase automatically when a timer ends
+                switchPhase();
+                startTimer(); // auto-start next phase
+            }
+        }.start();
+
+        timerRunning = true;
+        startButton.setText("Pause");
+    }
+
+    private void pauseTimer() {
+        if (countDownTimer != null) countDownTimer.cancel();
+        timerRunning = false;
+        startButton.setText("Start");
+    }
+
+    private void switchPhase() {
+        if (currentPhase == Phase.WORK) {
+            currentPhase = Phase.BREAK;
+            timeLeftMs = BREAK_DURATION_MS;
+        } else {
+            currentPhase = Phase.WORK;
+            timeLeftMs = WORK_DURATION_MS;
+        }
+        updateUIForPhase();
+        updateTimerText();
+    }
+
+    private void updateUIForPhase() {
+        if (currentPhase == Phase.WORK) {
+            sessionTextView.setText("WORK");
+            rootLayout.setBackgroundColor(ContextCompat.getColor(this, R.color.red));
+            startButton.setBackgroundColor(ContextCompat.getColor(this, R.color.red));
+        } else {
+            sessionTextView.setText("REST");
+            rootLayout.setBackgroundColor(ContextCompat.getColor(this, R.color.green));
+            startButton.setBackgroundColor(ContextCompat.getColor(this, R.color.green));
+        }
+    }
+
+    private void updateTimerText() {
+        long totalSeconds = timeLeftMs / 1000;
+        long minutes = totalSeconds / 60;
+        long seconds = totalSeconds % 60;
+
+        String time = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
+        timerTextView.setText(time);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        handler.removeCallbacks(switchRunnable); // prevent memory leaks
+        if (countDownTimer != null) countDownTimer.cancel();
     }
 }

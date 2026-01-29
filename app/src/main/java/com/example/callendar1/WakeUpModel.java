@@ -1,50 +1,22 @@
 package com.example.callendar1;
 
-
-
 public class WakeUpModel {
     private int id;
     private String godzina;
     private String kiedywakeup;
+    private boolean enabled;
 
-    public WakeUpModel(int id, String godzina, String kiedywakeup) {
+    public WakeUpModel(int id, String godzina, String kiedywakeup, boolean enabled) {
         this.id = id;
         this.godzina = godzina;
         this.kiedywakeup = kiedywakeup;
+        this.enabled = enabled;
     }
 
-    public WakeUpModel() {
-    }
+    public int getId() { return id; }
+    public String getGodzina() { return godzina; }
+    public String getkiedywakeup() { return kiedywakeup; }
 
-    @Override
-    public String toString() {
-        return "TaskModel{" +
-                "id=" + id +
-                ", godzina='" + godzina + '\'' +
-                ", kiedywakeup=" + kiedywakeup + '}';
-    }
-
-    public String getGodzina() {
-        return godzina;
-    }
-
-    public void setGodzina(String godzina) {
-        this.godzina = godzina;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getkiedywakeup() {
-        return kiedywakeup;
-    }
-
-    public void setKiedywakeup(String kiedywakeup) {
-        this.kiedywakeup = kiedywakeup;
-    }
+    public boolean isEnabled() { return enabled; }
+    public void setEnabled(boolean enabled) { this.enabled = enabled; }
 }

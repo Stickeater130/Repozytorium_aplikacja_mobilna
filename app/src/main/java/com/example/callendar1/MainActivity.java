@@ -120,6 +120,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+
     }
 
     private void ShowTaskaList(DataBaseHelper dataBaseHelper)
@@ -226,16 +228,10 @@ public class MainActivity extends AppCompatActivity {
                     }
                     p++;
                 }
-
                 return textview;
-
-
             }
         };
         //
         ViewListNew.setAdapter(adapterTaskModelSimple);
-
-
     }
-
 }

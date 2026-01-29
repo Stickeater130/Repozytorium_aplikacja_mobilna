@@ -22,8 +22,8 @@
 
     <TextView
         android:id="@+id/textView2"
-        android:layout_width="98dp"
-        android:layout_height="37dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text=" "
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -51,12 +51,12 @@
         android:layout_height="101dp"
         android:layout_marginStart="160dp"
         android:layout_marginEnd="160dp"
+        android:background="@null"
         android:ems="10"
         android:inputType="text"
         android:rotationX="6"
         android:text="10:30"
         android:textSize="64sp"
-        android:background="@null"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -84,18 +84,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
-
-    <Switch
-        android:id="@+id/switch1"
-        android:layout_width="56dp"
-        android:layout_height="35dp"
-        android:text=" "
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.954"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.616" />
 
     <Button
         android:id="@+id/button2"

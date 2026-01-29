@@ -1,19 +1,12 @@
 package com.example.callendar1;
 
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,25 +14,25 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
+import java.util.Locale;
 
 public class Budzik extends AppCompatActivity {
-    Button backButton;
-    Button Button2;
-    CalendarView kalendarzBudzik;
-    TextView dataBudzik;
-    EditText godzinaBudzik;
-    Button budzikButton;
-    ListView budzikList;
-    BudzikDataBaseHelper budzikdataBaseHelper = new BudzikDataBaseHelper(Budzik.this);
-    ArrayAdapter<WakeUpModel> adapterWakeUpModel;
-    ArrayAdapter<String> adapterWakeUpModelSimple;
-    Switch WakeUpSwitch;
+
+    private Button backButton;
+    private Button Button2;
+    private CalendarView kalendarzBudzik;
+    private TextView dataBudzik;
+    private EditText godzinaBudzik;
+    private Button budzikButton;
+    private ListView budzikList;
+
+    private BudzikDataBaseHelper budzikdataBaseHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.budzik);
+
         backButton = findViewById(R.id.Next2);
         Button2 = findViewById(R.id.button2);
         kalendarzBudzik = findViewById(R.id.calendarView2);
@@ -47,154 +40,85 @@ public class Budzik extends AppCompatActivity {
         godzinaBudzik = findViewById(R.id.editTextText);
         budzikButton = findViewById(R.id.button);
         budzikList = findViewById(R.id.budzikList);
-        WakeUpSwitch = findViewById(R.id.switch1);
-        ShowWakeUpListSimple(budzikdataBaseHelper);
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
-        kalendarzBudzik.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
-            @Override
-            public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
-                // Miesiace w Kalendarzu zaczynają się od 0 (styczeń)
-                String selectedDate = year + "-" + (month + 1) + "-" +dayOfMonth ;
-                dataBudzik.setText(selectedDate);
-            }
-        });
-        budzikButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                WakeUpModel wakeupModel = null;
 
-                try
-                {
-                    wakeupModel = new WakeUpModel( 1,godzinaBudzik.getText().toString(),dataBudzik.getText().toString());
-                    Toast.makeText(Budzik.this,wakeupModel.toString(),Toast.LENGTH_SHORT).show();
-                } catch (Exception e) {
-                    Toast.makeText(Budzik.this,"Error",Toast.LENGTH_SHORT).show();
-                }
-                if (wakeupModel != null) {
-                    boolean success = budzikdataBaseHelper.addOne(wakeupModel);
-                    Toast.makeText(Budzik.this, "Success = " + success, Toast.LENGTH_SHORT).show();
-                }
-                ShowWakeUpListSimple(budzikdataBaseHelper);
-                //Alarm();
-                //Alarm2(budzikdataBaseHelper);
-            }
+        // FIX: create DB helper here (NOT as field initializer using Budzik.this)
+        budzikdataBaseHelper = new BudzikDataBaseHelper(this);
+
+        // Set initial date text to today's date (or calendar current date)
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        dataBudzik.setText(df.format(new Date(kalendarzBudzik.getDate())));
+
+        ShowWakeUpList();
+
+        Intent intent = new Intent(Budzik.this,WakeUpService.class);
+        startService(intent);
+
+        backButton.setOnClickListener(v -> finish());
+
+        kalendarzBudzik.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
+            // month is 0-based
+            String selectedDate = String.format(Locale.getDefault(),
+                    "%04d-%02d-%02d", year, (month + 1), dayOfMonth);
+            dataBudzik.setText(selectedDate);
         });
 
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
+        budzikButton.setOnClickListener(v -> {
+            String time = godzinaBudzik.getText().toString().trim();
+            String date = dataBudzik.getText().toString().trim();
+
+            if (date.isEmpty()) {
+                Toast.makeText(this, "Choose a date", Toast.LENGTH_SHORT).show();
+                return;
             }
-        });
-
-        Button2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Budzik.this, Pomodoro.class);
-                startActivity(intent);
-            }
-        });
-
-        WakeUpSwitch.setOnClickListener(new View.OnClickListener(){
-
-            @Override
-            public void onClick(View v) {
-                if (WakeUpSwitch.isChecked())
-                {
-                    Intent intent = new Intent(Budzik.this,WakeUpService.class);
-                    startService(intent);
-                } else {
-                    Intent intent = new Intent(Budzik.this,WakeUpService.class);
-                    stopService(intent);
-                }
+            if (time.isEmpty()) {
+                Toast.makeText(this, "Enter time (e.g. 10:30)", Toast.LENGTH_SHORT).show();
+                return;
             }
 
+            WakeUpModel wakeupModel = new WakeUpModel(
+                    0,
+                    time,
+                    date,
+                    false
+            );
+
+            boolean success = budzikdataBaseHelper.addOne(wakeupModel);
+            Toast.makeText(this, "Saved = " + success, Toast.LENGTH_SHORT).show();
+
+            ShowWakeUpList();
         });
 
-        budzikList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-
-                String clickedtask = (String) parent.getItemAtPosition(position);
-
-                new AlertDialog.Builder(Budzik.this)
-                        .setTitle("Usuwanie zadania")
-                        .setMessage("Czy na pewno chcesz usunąć?\n\n" + clickedtask.toString())
-                        .setPositiveButton("Usuń", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                budzikdataBaseHelper.deleteOneSimple(clickedtask);
-                                ShowWakeUpListSimple(budzikdataBaseHelper);
-                                Toast.makeText(Budzik.this,
-                                        "Usunięto: " + clickedtask.toString(),
-                                        Toast.LENGTH_SHORT).show();
-                            }
-                        })
-                        .setNegativeButton("Anuluj", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        })
-                        .show();
-
-                return true; // very important: confirms we handled the long click
-            }
+        Button2.setOnClickListener(v -> {
+            Intent intent1 = new Intent(Budzik.this, Pomodoro.class);
+            startActivity(intent1);
         });
 
+        budzikList.setOnItemLongClickListener((parent, view, position, id) -> {
+            WakeUpModel clicked = (WakeUpModel) parent.getItemAtPosition(position);
 
-        //final MediaPlayer bellsoundMP = MediaPlayer.create(this,R.raw.notification_bell_sound);
-        //bellsoundMP.start();
-    }
-    private void ShowWakeUpList(BudzikDataBaseHelper budzikDataBaseHelper)
-    {
-        adapterWakeUpModel = new ArrayAdapter<WakeUpModel>(Budzik.this, android.R.layout.simple_list_item_1, budzikDataBaseHelper.getEveryOne());
-        budzikList.setAdapter(adapterWakeUpModel);
+            new AlertDialog.Builder(Budzik.this)
+                    .setTitle("Usuwanie zadania")
+                    .setMessage("Czy na pewno chcesz usunąć?\n\n" +
+                            clicked.getkiedywakeup() + " " + clicked.getGodzina())
+                    .setPositiveButton("Usuń", (dialog, which) -> {
+                        boolean ok = budzikdataBaseHelper.deleteOne(clicked);
+                        Toast.makeText(this, "Deleted = " + ok, Toast.LENGTH_SHORT).show();
+                        ShowWakeUpList();
+                    })
+                    .setNegativeButton("Anuluj", (dialog, which) -> dialog.dismiss())
+                    .show();
+
+            return true;
+        });
+
     }
 
-    private void ShowWakeUpListSimple(BudzikDataBaseHelper budzikDataBaseHelper)
-    {
-        adapterWakeUpModelSimple = new ArrayAdapter<String>(Budzik.this, android.R.layout.simple_list_item_1, budzikDataBaseHelper.getEveryOneSimple());
-        budzikList.setAdapter(adapterWakeUpModelSimple);
-    }
-
-    private void Alarm()
-    {
-        final MediaPlayer bellsoundMP = MediaPlayer.create(this,R.raw.notification_bell_sound);
-        bellsoundMP.start();
-    }
-
-    private void Alarm2(BudzikDataBaseHelper budzikDataBaseHelper)
-    {
-        List<WakeUpModel> result;
-        result = budzikDataBaseHelper.getEveryOne();
-        for(WakeUpModel element:result)
-        {
-
-            java.sql.Date kiedywakeup_date = java.sql.Date.valueOf(element.getkiedywakeup());
-
-            Date currentDate = new Date();
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-            String currentDate_string = formatter.format(currentDate);
-            java.sql.Date currentdate_date = java.sql.Date.valueOf(currentDate_string);
-            long ilemilisekund = (kiedywakeup_date.getTime()-currentdate_date.getTime());
-            long ileminut = ilemilisekund / (60 * 1000);
-            if (ileminut>=-28800 && ileminut<=28800)
-            {
-                final MediaPlayer churchbellsoundMP = MediaPlayer.create(this,R.raw.church_bell);
-                churchbellsoundMP.start();
-            }
-        }
-
-
-
+    private void ShowWakeUpList() {
+        WakeUpAdapter adapter = new WakeUpAdapter(
+                this,
+                budzikdataBaseHelper.getEveryOne(),
+                budzikdataBaseHelper
+        );
+        budzikList.setAdapter(adapter);
     }
 }
-
-
-
