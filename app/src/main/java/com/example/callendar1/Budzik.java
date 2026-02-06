@@ -83,7 +83,7 @@ public class Budzik extends AppCompatActivity {
             );
 
             boolean success = budzikdataBaseHelper.addOne(wakeupModel);
-            Toast.makeText(this, "Saved = " + success, Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "Saved = " + success, Toast.LENGTH_SHORT).show();
 
             ShowWakeUpList();
         });
@@ -102,7 +102,7 @@ public class Budzik extends AppCompatActivity {
                             clicked.getkiedywakeup() + " " + clicked.getGodzina())
                     .setPositiveButton("Usuń", (dialog, which) -> {
                         boolean ok = budzikdataBaseHelper.deleteOne(clicked);
-                        Toast.makeText(this, "Deleted = " + ok, Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(this, "Deleted = " + ok, Toast.LENGTH_SHORT).show();
                         ShowWakeUpList();
                     })
                     .setNegativeButton("Anuluj", (dialog, which) -> dialog.dismiss())

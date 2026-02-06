@@ -1,5 +1,6 @@
 package com.example.callendar1;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.widget.Button;
@@ -25,6 +26,7 @@ public class Pomodoro extends AppCompatActivity {
     private TextView sessionTextView;
     private TextView timerTextView;
     private Button startButton;
+    private Button backButton;
 
     private CountDownTimer countDownTimer;
     private boolean timerRunning = false;
@@ -41,6 +43,7 @@ public class Pomodoro extends AppCompatActivity {
         sessionTextView = findViewById(R.id.session_text_view);
         timerTextView = findViewById(R.id.timer_text_view);
         startButton = findViewById(R.id.start_button);
+        backButton = findViewById(R.id.button3);
 
         updateUIForPhase();
         updateTimerText();
@@ -51,6 +54,11 @@ public class Pomodoro extends AppCompatActivity {
             } else {
                 pauseTimer();
             }
+        });
+
+        backButton.setOnClickListener(v -> {
+            Intent intent1 = new Intent(Pomodoro.this, MainActivity.class);
+            startActivity(intent1);
         });
     }
 
@@ -102,10 +110,12 @@ public class Pomodoro extends AppCompatActivity {
             sessionTextView.setText("WORK");
             rootLayout.setBackgroundColor(ContextCompat.getColor(this, R.color.red));
             startButton.setBackgroundColor(ContextCompat.getColor(this, R.color.red));
+            backButton.setBackgroundColor(ContextCompat.getColor(this, R.color.red));
         } else {
             sessionTextView.setText("REST");
             rootLayout.setBackgroundColor(ContextCompat.getColor(this, R.color.green));
             startButton.setBackgroundColor(ContextCompat.getColor(this, R.color.green));
+            backButton.setBackgroundColor(ContextCompat.getColor(this, R.color.green));
         }
     }
 

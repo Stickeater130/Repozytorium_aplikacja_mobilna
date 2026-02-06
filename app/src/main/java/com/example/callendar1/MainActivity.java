@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
         SendButton = findViewById(R.id.SendButton);
-        Button2 = findViewById(R.id.button2);
+        //Button2 = findViewById(R.id.button2);
         Next = findViewById(R.id.Next);
         KiedyKoniec = findViewById(R.id.editTextText_kiedykoniec);
         Opis = findViewById(R.id.opis);
@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
                 try
                 {
                     taskModel = new TaskModel( 1,Opis.getText().toString(),KiedyKoniec.getText().toString(),"1");
-                    Toast.makeText(MainActivity.this,taskModel.toString(),Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(MainActivity.this,taskModel.toString(),Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     Toast.makeText(MainActivity.this,"Error",Toast.LENGTH_SHORT).show();
                 }
@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
                 DataBaseHelper dataBaseHelper = new DataBaseHelper(MainActivity.this);
 
                 boolean success = dataBaseHelper.addOne(taskModel);
-                Toast.makeText(MainActivity.this,"Success = "+success,Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MainActivity.this,"Success = "+success,Toast.LENGTH_SHORT).show();
                 ShowTaskaListSimple(dataBaseHelper);
 
             }
@@ -103,9 +103,9 @@ public class MainActivity extends AppCompatActivity {
                             public void onClick(DialogInterface dialog, int which) {
                                 dataBaseHelper.deleteOneSimple(clickedtask);
                                 ShowTaskaListSimple(dataBaseHelper);
-                                Toast.makeText(MainActivity.this,
-                                        "Usunięto: " + clickedtask.toString(),
-                                        Toast.LENGTH_SHORT).show();
+                                //Toast.makeText(MainActivity.this,
+                                //        "Usunięto: " + clickedtask.toString(),
+                                //        Toast.LENGTH_SHORT).show();
                             }
                         })
                         .setNegativeButton("Anuluj", new DialogInterface.OnClickListener() {
