@@ -1,8 +1,13 @@
 package com.example.callendar1;
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.EditText;
@@ -13,7 +18,9 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class Budzik extends AppCompatActivity {
@@ -50,10 +57,14 @@ public class Budzik extends AppCompatActivity {
 
         ShowWakeUpList();
 
-        Intent intent = new Intent(Budzik.this,WakeUpService.class);
-        startService(intent);
+        //Intent intent = new Intent(Budzik.this,WakeUpService.class);
+        //startService(intent);
 
-        backButton.setOnClickListener(v -> finish());
+        backButton.setOnClickListener(
+                v -> {
+                    finish();
+                    //Alarm(budzikdataBaseHelper) ;
+                });
 
         kalendarzBudzik.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
             // month is 0-based
@@ -84,8 +95,8 @@ public class Budzik extends AppCompatActivity {
 
             boolean success = budzikdataBaseHelper.addOne(wakeupModel);
             //Toast.makeText(this, "Saved = " + success, Toast.LENGTH_SHORT).show();
-
             ShowWakeUpList();
+
         });
 
         Button2.setOnClickListener(v -> {

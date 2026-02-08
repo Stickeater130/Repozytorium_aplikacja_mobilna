@@ -1,5 +1,7 @@
 package com.example.callendar1;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -13,6 +15,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Calendar;
 import java.util.List;
 
 public class WakeUpAdapter extends ArrayAdapter<WakeUpModel> {
@@ -50,23 +53,9 @@ public class WakeUpAdapter extends ArrayAdapter<WakeUpModel> {
         swAlarm.setOnCheckedChangeListener((buttonView, isChecked) -> {
             model.setEnabled(isChecked);
             db.setEnabled(model.getId(), isChecked);
-
-            // If you really want to start/stop a service globally:
-            //Intent intent = new Intent(getContext(), WakeUpService.class);
-
-            /*if (isChecked) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    getContext().startForegroundService(intent);
-                } else {
-                    getContext().startService(intent);
-                }
-            } else {
-                getContext().stopService(intent);
-            }
-            */
-            // Better long-term: schedule/cancel per alarm via AlarmManager using model.getId()
         });
 
         return row;
     }
+
 }

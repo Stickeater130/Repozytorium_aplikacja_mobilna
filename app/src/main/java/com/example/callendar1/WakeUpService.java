@@ -44,36 +44,41 @@ public class WakeUpService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        player = MediaPlayer.create(this, R.raw.church_bell);
+        player.setLooping(true);
         budzikDataBaseHelper = new BudzikDataBaseHelper(getApplicationContext());
-        createChannel();
+        //createChannel();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (!isRunning) {
-            isRunning = true;
-            backgroundThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    alarmLoop();
-                    stopSelf();
-                }
-            });
-            backgroundThread.start();
-        }
+       // if (!isRunning) {
+          //  isRunning = true;
+           // backgroundThread = new Thread(new Runnable() {
+            //    @Override
+              //  public void run() {
+             //       alarmLoop();
+                 //   stopSelf();
+              //  }
+           // });
+         //   backgroundThread.start();
+       // }
+
+                player.start();
         return START_STICKY;
     }
 
     @Override
     public void onDestroy() {
-        isRunning = false;
+       // isRunning = false;
 
-        if (backgroundThread != null && backgroundThread.isAlive()) {
-            backgroundThread.interrupt();
-        }
+      //  if (backgroundThread != null && backgroundThread.isAlive()) {
+       //     backgroundThread.interrupt();
+       // }
 
-        stopRinging();
+       // stopRinging();
         super.onDestroy();
+       // if (player != null) { player.stop(); player.release(); }
     }
 
     @Nullable

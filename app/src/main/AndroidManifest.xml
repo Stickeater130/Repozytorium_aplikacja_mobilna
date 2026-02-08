@@ -4,6 +4,8 @@
 
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
+
 
     <application
         android:allowBackup="true"
@@ -34,6 +36,7 @@
             android:exported="false"
             android:parentActivityName=".Budzik" />
 
+        <receiver android:name=".AlarmMan" android:exported="true"/>
         <service
             android:name=".WakeUpService"
             android:exported="false"
